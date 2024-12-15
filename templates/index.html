@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Generator</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>QR Code Generator</h1>
+        <form action="/generate" method="POST">
+            <label for="data">Enter Data:</label>
+            <input type="text" id="data" name="data" placeholder="Enter text or URL" oninput="generatePreview()" required>
+            <button type="submit">Generate QR Code</button>
+        </form>
+
+        <div id="qrPreview" class="qr-preview">
+            {% if qr_code %}
+                <h3>Live Preview</h3>
+                <img src="data:image/png;base64,{{ qr_code }}" alt="QR Code">
+            {% else %}
+                <p>Enter some data to generate the QR Code.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        // লাইভ প্রিভিউ ফাংশন
+        function generatePreview() {
+            const data = document.getElementById('data').value;
+            const qrPreview = document.getElementById('qrPreview');
+            if (data) {
+                fetch(`/generate?data=${data}`)
+                    .then(response => response.text())
+                    .then(html => {
+                        qrPreview.innerHTML = html;
+                    });
+            } else {
+                qrPreview.innerHTML = '<p>Enter some data to generate the QR Code.</p>';
+            }
+        }
+    </script>
+</body>
+</html>
